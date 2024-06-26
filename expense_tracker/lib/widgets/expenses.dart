@@ -16,27 +16,77 @@ class Expenses extends StatefulWidget {
 class _ExpensesState extends State<Expenses> {
   final List<Expense> _expenseItems = expenses;
 
-  void _addExpense() {
+  void _addExpense(Expense item) {
+    setState(() {
+      expenses.add(item);
+    });
+  }
+
+  void _getExpense() {
     // add pop up from the bottom
-    showModalBottomSheet(context: context, builder: (ctx) => const NewExpense());
+    showModalBottomSheet(
+      isScrollControlled: true,
+      context: context,
+      builder: (ctx) => NewExpense(
+        addExpense: _addExpense,
+      ),
+    );
+  }
+
+  // remove expense
+  void _removeExpense(Expense expense) {
+    // get the index of expense
+    final expenseIndex = _expenseItems.indexOf(expense);
+
+    setState(() {
+      _expenseItems.remove(expense);
+    });
+
+    // clear existing snackar before showing next snackbar
+    ScaffoldMessenger.of(context).clearSnackBars();
+
+    // show snackbar
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      duration: const Duration(seconds: 10),
+      action: SnackBarAction(
+          label: "undo",
+          onPressed: () {
+            setState(() {
+              _expenseItems.insert(expenseIndex, expense);
+            });
+          }),
+      content: const Text("Expense removed."),
+    ));
   }
 
   @override
   Widget build(BuildContext context) {
+    Widget mainContent = const Center(
+      child: Text('Start adding your expense...'),
+    );
+
+    if (_expenseItems.isNotEmpty) {
+      mainContent = ExpenseList(
+        expenses: _expenseItems,
+        onDismissed: _removeExpense,
+      );
+    }
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Expense Tracker'),
         actions: [
-          IconButton(onPressed: _addExpense, icon: const Icon(Icons.add)),
+          IconButton(
+            onPressed: _getExpense,
+            icon: const Icon(Icons.add),
+          ),
         ],
       ),
       body: Column(
         children: [
-          const Text('Create new expenses...'),
+          const Text('The Chart'),
           Expanded(
-            child: ExpenseList(
-              expenses: _expenseItems,
-            ),
+            child: mainContent,
           ),
         ],
       ),
