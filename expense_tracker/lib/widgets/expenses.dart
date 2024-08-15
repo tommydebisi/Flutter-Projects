@@ -1,5 +1,6 @@
 import 'package:expense_tracker/models/data/expense_items.dart';
 import 'package:expense_tracker/models/expense.dart';
+import 'package:expense_tracker/widgets/chart/chart.dart';
 import 'package:expense_tracker/widgets/expense_list/expense_list.dart';
 import 'package:expense_tracker/widgets/new_expense.dart';
 import 'package:flutter/material.dart';
@@ -26,6 +27,7 @@ class _ExpensesState extends State<Expenses> {
     // add pop up from the bottom
     showModalBottomSheet(
       isScrollControlled: true,
+      useSafeArea: true, // avoids the phone elements e.g camera
       context: context,
       builder: (ctx) => NewExpense(
         addExpense: _addExpense,
@@ -61,6 +63,8 @@ class _ExpensesState extends State<Expenses> {
 
   @override
   Widget build(BuildContext context) {
+    final width = MediaQuery.of(context).size.width;
+
     Widget mainContent = const Center(
       child: Text('Start adding your expense...'),
     );
@@ -82,14 +86,25 @@ class _ExpensesState extends State<Expenses> {
           ),
         ],
       ),
-      body: Column(
-        children: [
-          const Text('The Chart'),
-          Expanded(
-            child: mainContent,
-          ),
-        ],
-      ),
+      body: width < 600 // Based on screen width perform an action
+          ? Column(
+              children: [
+                Chart(expenses: _expenseItems),
+                Expanded(
+                  child: mainContent,
+                ),
+              ],
+            )
+          : Row(
+              children: [
+                Expanded(
+                  child: Chart(expenses: _expenseItems),
+                ),
+                Expanded(
+                  child: mainContent,
+                ),
+              ],
+            ),
     );
   }
 }

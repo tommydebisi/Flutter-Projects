@@ -37,3 +37,31 @@ class Expense {
     return dateFormatter.format(date);
   }
 }
+
+// class to hold the summed up data for our chart
+class ExpenseBucket {
+  const ExpenseBucket({
+    required this.category,
+    required this.expenses,
+  });
+
+  // constructor function to filter the list by category
+  ExpenseBucket.fromCategory(List<Expense> allExpenses, this.category)
+      : expenses = allExpenses
+            .where((expense) => expense.category == category)
+            .toList();
+
+  final List<Expense> expenses;
+  final Category category;
+
+  double get totalExpenses {
+    double sum = 0;
+
+    // loop through expenses and get the total amount
+    for (final expense in expenses) {
+      sum += expense.amount;
+    }
+
+    return sum;
+  }
+}
