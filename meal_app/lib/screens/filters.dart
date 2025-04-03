@@ -21,7 +21,7 @@ class _FiltersScreenState extends State<FiltersScreen> {
   bool _isVegetarian = false;
   bool _isLactose = false;
 
-  void _popHandler(bool popped) {
+  void _popHandler(bool popped, Object? result) {
     // true if system is trying to pop the screen
     // handle the logic accordingly
     if (popped) {
@@ -55,7 +55,7 @@ class _FiltersScreenState extends State<FiltersScreen> {
       body: PopScope(
         // tells us when a user presses the back button
         canPop: false,
-        onPopInvoked: _popHandler,
+        onPopInvokedWithResult: _popHandler,
         child: Column(
           children: [
             FilterItem(
